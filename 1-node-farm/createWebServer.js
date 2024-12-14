@@ -1,21 +1,8 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
-
-const replaceTemplate = (temp, product) => {
-	let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-	output = output.replace(/{%IMAGE%}/g, product.image);
-	output = output.replace(/{%PRICE%}/g, product.price);
-	output = output.replace(/{%COUNTRY%}/g, product.from);
-	output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
-	output = output.replace(/{%QUANTITY%}/g, product.quantity);
-	output = output.replace(/{%DESCRIPTION%}/g, product.description);
-	output = output.replace(/{%ID%}/g, product.id);
-
-	if (!product.organic)
-		output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-	return output;
-};
+const slugify = require("slugify");
+const replaceTemplate = require("./modules/replaceTemplate");
 
 const overviewPage = fs.readFileSync(
 	`${__dirname}/templates/overview.html`,
@@ -29,6 +16,9 @@ const cardPage = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8"); // __dirname = directory name currently on
 const dataObject = JSON.parse(data);
+
+const slugs = dataObject.map((el) => slugify(el.productName, { lower: true }));
+// dataObject.forEach((el, i) => (el["slug"] = slugs[i])); // adding the slugs to each object in the array
 
 const server = http.createServer((req, res) => {
 	const { query, pathname } = url.parse(req.url, true);
