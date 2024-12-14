@@ -1,5 +1,6 @@
 const http = require("http");
 const fs = require("fs");
+const url = require("url");
 
 const replaceTemplate = (temp, product) => {
 	let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
@@ -30,10 +31,10 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8"); // __d
 const dataObject = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-	const pathName = req.url;
+	const { query, pathname } = url.parse(req.url, true);
 
 	// overview page
-	if (pathName === "/" || pathName === "/overview") {
+	if (pathname === "/" || pathname === "/overview") {
 		res.writeHead(200, { "content-type": "text/html" });
 
 		const cardsHTML = dataObject
@@ -45,12 +46,15 @@ const server = http.createServer((req, res) => {
 		res.end(output);
 
 		// product page
-	} else if (pathName === "/product") {
+	} else if (pathname === "/product") {
 		res.writeHead(200, { "content-type": "text/html" });
-		res.end(productPage);
+		const product = dataObject[query.id];
+		const output = replaceTemplate(productPage, product);
+
+		res.end(output);
 
 		// api page
-	} else if (pathName === "/api") {
+	} else if (pathname === "/api") {
 		res.writeHead(200, { "content-type": "application/json" }); // 200 stands for everything is ok
 		res.end(data);
 
