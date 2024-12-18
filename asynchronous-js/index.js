@@ -32,12 +32,33 @@ const getDogPicture = async () => {
 		console.log("Random dog image saved to file!");
 	} catch (err) {
 		console.log(err);
+
+		throw err;
 	}
+	return "Ready!";
 };
 
-getDogPicture();
+// returning a value with async/await
+(async () => {
+	try {
+		const x = await getDogPicture();
+		console.log(x);
+	} catch {
+		console.log("ERROR");
+	}
+})();
 
 /*
+// returning a value with then and catch
+getDogPicture()
+	.then((x) => {
+		console.log(x);
+	})
+	.catch((err) => {
+		console.log("ERROR");
+	});
+
+// promises with then and catch
 readFilePromise(`${__dirname}/dog.txt`)
 	.then((data) => {
 		return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
