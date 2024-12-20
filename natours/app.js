@@ -1,15 +1,26 @@
 const express = require("express");
 const fs = require("fs");
+const morgan = require("morgan");
 
 const app = express();
 const port = 3000;
 
 //////////////////////// MIDDLEWARE //////////////////////
+// 3rd-party middlewares
+app.use(morgan("dev"));
+
 app.use(express.json());
+
+// my own middleware to dated the request
+app.use((req, res, next) => {
+	req.requestTime = new Date().toISOString();
+	next();
+});
 
 /////////////////////// FUNCTIONS HANDLERS /////////////////////////
 // get all the tours
 const getAllTours = (req, res) => {
+	console.log(req.requestTime);
 	res
 		.status(200)
 		.json({ status: "success", results: tours.length, data: { tours } }); // not needed to 'tours: tours' when they have the same name
@@ -77,6 +88,41 @@ const deleteTour = (req, res) => {
 	});
 };
 
+const getAllUsers = (req, res) => {
+	res.status(500).json({
+		status: "error",
+		message: "This route is not yet defined!",
+	});
+};
+
+const getUser = (req, res) => {
+	res.status(500).json({
+		status: "error",
+		message: "This route is not yet defined!",
+	});
+};
+
+const createUser = (req, res) => {
+	res.status(500).json({
+		status: "error",
+		message: "This route is not yet defined!",
+	});
+};
+
+const updateUser = (req, res) => {
+	res.status(500).json({
+		status: "error",
+		message: "This route is not yet defined!",
+	});
+};
+
+const deleteUser = (req, res) => {
+	res.status(500).json({
+		status: "error",
+		message: "This route is not yet defined!",
+	});
+};
+
 /////////////////////////// FILES //////////////////////////////
 // read tours data before the route handler
 const tours = JSON.parse(
@@ -84,6 +130,7 @@ const tours = JSON.parse(
 );
 
 ////////////////////////// ROUTES //////////////////////////////
+// routes for tours
 app.route("/api/v1/tours").get(getAllTours).post(createTour);
 app
 	.route("/api/v1/tours/:id") // define variable with :
@@ -91,16 +138,15 @@ app
 	.patch(updateTour)
 	.delete(deleteTour);
 
-/*
-// old version
-app.get("/api/v1/tours", getAllTours);
-app.get("/api/v1/tours/:id", getTour); // define variable with :
-app.post("/api/v1/tours", createTour);
-app.patch("/api/v1/tours/:id", updateTour);
-app.delete("/api/v1/tours/:id", deleteTour);
-*/
+// routes for users
+app.route("/api/v1/users").get(getAllUsers).post(createUser);
+app
+	.route("/api/v1/users/:id")
+	.get(getUser)
+	.patch(updateUser)
+	.delete(deleteUser);
 
-// create the server
+/////////////////////// START THE SERVER /////////////////////////
 app.listen(port, () => {
 	console.log(`App running on port ${port}...`);
 });
