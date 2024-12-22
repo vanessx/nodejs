@@ -9,7 +9,6 @@ const app = express();
 //////////////////////// MIDDLEWARE //////////////////////
 // 3rd-party middlewares
 app.use(morgan("dev"));
-
 app.use(express.json());
 
 // my own middleware to dated the request
